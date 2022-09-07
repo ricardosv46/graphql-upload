@@ -3,10 +3,10 @@ import { Field, InputType, ObjectType } from 'type-graphql'
 import {
   Column,
   Entity,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  OneToMany
+  PrimaryGeneratedColumn
 } from 'typeorm'
 import Conexion from './Conexion'
 

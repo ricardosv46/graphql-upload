@@ -47,7 +47,7 @@ export default class UsuarioResolvers {
       const isValidPass = await bcrypt.compare(input.password, usuario.password)
 
       if (!isValidPass) {
-        return setError('password', 'El email o la contraseña son invalidos')
+        return setError('email', 'El email o la contraseña son invalidos')
       }
 
       const token = await genJWT(usuario.id)
@@ -80,9 +80,16 @@ export default class UsuarioResolvers {
     }
   }
 
-  @UseMiddleware(isAuth)
   @Query(() => [Usuario])
   async getAllUsers() {
     return this.repository.find({ relations: { conexiones: true } })
+  }
+
+  @Query(() => Usuario, { nullable: true })
+  async getUserById(@Arg('id') id: number): Promise<Usuario | null> {
+    return this.repository.findOne({
+      where: { id },
+      relations: { conexiones: true }
+    })
   }
 }
