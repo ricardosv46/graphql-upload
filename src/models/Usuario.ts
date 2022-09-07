@@ -27,10 +27,13 @@ export default class Usuario {
 
   @Field()
   @Column()
-  lastName!: string
+  lastname!: string
 
   @Column()
   password!: string
+
+  @Column({ nullable: true })
+  externalid: string
 
   @Field(() => DateScalar)
   @CreateDateColumn()
