@@ -6,8 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  OneToOne,
-  ManyToOne,
   OneToMany
 } from 'typeorm'
 import Conexion from './Conexion'

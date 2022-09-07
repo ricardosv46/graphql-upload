@@ -39,6 +39,8 @@ export default class Sockets {
 
         console.log({ ms })
       })
+
+      return null
     })
   }
 }
