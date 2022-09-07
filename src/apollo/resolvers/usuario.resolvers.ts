@@ -1,4 +1,3 @@
-import * as fs from 'fs'
 import bcrypt from 'bcrypt'
 import {
   Arg,
@@ -20,7 +19,6 @@ import UsuarioRepository from '@src/repository/usuario.repository'
 import { genJWT } from '@src/utils/jwt'
 import { isAuth } from '@src/middleware/isAuth'
 import { ApolloCtx } from '@src/interface'
-import path from 'path'
 
 @ObjectType()
 class UsuarioResponse {
@@ -86,13 +84,5 @@ export default class UsuarioResolvers {
   @Query(() => [Usuario])
   async getAllUsers() {
     return this.repository.find({ relations: { conexiones: true } })
-  }
-
-  @Mutation(() => Boolean)
-  async insertUsers() {
-    const str = fs.readFileSync(path.resolve(__dirname, '../../../src/migrations/insertUser.sql'), 'utf8')
-    await this.repository.query(str)
-
-    return true
   }
 }

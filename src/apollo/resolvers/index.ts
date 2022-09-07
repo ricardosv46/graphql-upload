@@ -1,4 +1,3 @@
-import HelloResolvers from './hello'
 import UsuarioResolvers from './usuario.resolvers'
 
-export const resolvers = [HelloResolvers, UsuarioResolvers] as const
+export const resolvers = [UsuarioResolvers] as const
