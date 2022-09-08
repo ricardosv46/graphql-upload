@@ -12,11 +12,20 @@ export default class Sockets {
 
   events() {
     this.io.on('connection', async (socket) => {
+      const sala = socket.handshake.query['sala'] as string
       const token = socket.handshake.query['authorization'] as string
+
+      console.log({ q: socket.handshake.query })
+
       const payload: any = verifyJWT(token.replace('Bearer ', ''))
 
       if (typeof payload?.id !== 'number') {
         console.log('ERROR_SOCKET_NO_AUTH')
+        return socket.disconnect()
+      }
+
+      if (typeof sala !== 'string') {
+        console.log('ERROR_SOCKET_NO_SALA')
         return socket.disconnect()
       }
 
@@ -33,11 +42,12 @@ export default class Sockets {
         console.log(`${user?.name} is disconnected`)
 
         await ConexionRepository.insert({
+          sala,
           userId: user?.id,
           seconds: ms / 1000
         })
 
-        console.log({ ms })
+        console.log({ ms, sala })
       })
 
       return null

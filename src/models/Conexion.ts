@@ -25,6 +25,10 @@ export default class Conexion {
   @Column()
   userId: number
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  sala?: string
+
   @ManyToOne(() => Usuario, (user) => user.conexiones)
   user: Usuario
 
