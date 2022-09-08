@@ -14,11 +14,13 @@ import logger from '@src/utils/logger'
 import { setError } from '@src/utils/setError'
 import FieldError from '@src/models/FieldError'
 import { mapDbErrors } from '@src/utils/mapDbErrors'
-import Usuario, { UsuarioInput } from '@src/models/Usuario'
+import Usuario, { UsuarioCreateInput, UsuarioInput } from '@src/models/Usuario'
 import UsuarioRepository from '@src/repository/usuario.repository'
 import { genJWT } from '@src/utils/jwt'
 import { isAuth } from '@src/middleware/isAuth'
 import { ApolloCtx } from '@src/interface'
+import { sendEmail } from '@src/utils/sendEmail'
+import { v4 } from 'uuid'
 
 @ObjectType()
 class UsuarioResponse {
@@ -32,6 +34,30 @@ class UsuarioResponse {
 @Resolver(Usuario)
 export default class UsuarioResolvers {
   repository = UsuarioRepository
+
+  @UseMiddleware(isAuth)
+  @Mutation(() => UsuarioResponse)
+  async register(
+    @Arg('input') input: UsuarioCreateInput
+  ): Promise<UsuarioResponse> {
+    try {
+      const hashPass = await bcrypt.hash(input.password, 10)
+
+      const user = new Usuario()
+
+      user.name = input.name
+      user.email = input.email
+      user.lastname = input.lastname
+      user.password = hashPass
+
+      await this.repository.insert(user)
+
+      return { data: user }
+    } catch (error) {
+      logger.error('Error al loggear al usuario')
+      return mapDbErrors(error.message)
+    }
+  }
 
   @Mutation(() => UsuarioResponse)
   async login(@Arg('input') input: UsuarioInput): Promise<UsuarioResponse> {
@@ -77,6 +103,31 @@ export default class UsuarioResolvers {
     } catch (error) {
       logger.error('Error al loggear al usuario')
       return mapDbErrors(error.message)
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async resetPassword(@Arg('email') email: string): Promise<boolean> {
+    try {
+      const user = await this.repository.findOne({ where: { email } })
+
+      if (!user) return true
+
+      const newPass = v4().split('-').pop()
+      const hashPass = await bcrypt.hash(newPass!, 10)
+
+      await this.repository.update(user.id, { password: hashPass })
+
+      await sendEmail({
+        to: email,
+        subject: 'Nueva contraseña solicitada',
+        html: `<b>Su nueva contraseña es ${newPass}</b>`
+      })
+
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
     }
   }
 

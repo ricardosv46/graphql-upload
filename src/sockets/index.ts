@@ -1,7 +1,8 @@
-import ConexionRepository from '@src/repository/conexion.repository'
-import UsuarioRepository from '@src/repository/usuario.repository'
-import { verifyJWT } from '@src/utils/jwt'
 import { Server } from 'socket.io'
+
+import { verifyJWT } from '@src/utils/jwt'
+import UsuarioRepository from '@src/repository/usuario.repository'
+import ConexionRepository from '@src/repository/conexion.repository'
 
 export default class Sockets {
   io: Server
@@ -14,8 +15,6 @@ export default class Sockets {
     this.io.on('connection', async (socket) => {
       const sala = socket.handshake.query['sala'] as string
       const token = socket.handshake.query['authorization'] as string
-
-      console.log({ q: socket.handshake.query })
 
       const payload: any = verifyJWT(token.replace('Bearer ', ''))
 

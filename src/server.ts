@@ -7,6 +7,7 @@ import Database from './db'
 import Apollo from './apollo'
 import logger from './utils/logger'
 import Sockets from './sockets'
+import { transport } from './utils/sendEmail'
 
 class Server {
   port = 8080
@@ -43,6 +44,10 @@ class Server {
 
     // Start Apollo
     await this.apollo.startApolloServer()
+
+    // Email service
+    await transport.verify().catch((err) => console.log({ err }))
+    logger.info('Started email service')
 
     // Start Server
     await new Promise((res) => this.server.listen(this.port, () => res(true)))

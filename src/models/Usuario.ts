@@ -59,3 +59,18 @@ export class UsuarioInput {
   @Field()
   password!: string
 }
+
+@InputType()
+export class UsuarioCreateInput {
+  @Field()
+  email: string
+
+  @Field()
+  name: string
+
+  @Field()
+  lastname: string
+
+  @Field()
+  password: string
+}
